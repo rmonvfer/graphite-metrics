@@ -1,0 +1,120 @@
+################################################################################
+# Diamond Configuration File
+################################################################################
+
+################################################################################
+### Options for the server
+[server]
+
+# Handlers for published metrics.
+handlers = diamond.handler.graphite.GraphiteHandler
+
+# User diamond will run as
+# Leave empty to use the current user
+user =
+
+# Group diamond will run as
+# Leave empty to use the current group
+group =
+
+# Pid file, on systemd if not using default PID file
+# make sure you also change systemd's diamond unit.
+pid_file = /var/run/diamond.pid
+
+# Directory to load collector modules from
+collectors_path = /usr/local/share/diamond/collectors/
+
+# Directory to load collector configs from
+collectors_config_path = /etc/diamond/collectors/
+
+# Number of seconds between each collector load
+collectors_load_delay = 1.0
+
+# Directory to load handler configs from
+handlers_config_path = /etc/diamond/handlers/
+
+# Directory to load handler modules from
+handlers_path = /usr/share/diamond/handlers/
+
+# Maximum number of metrics waiting to be processed by handlers.
+# When metric queue is full, new metrics are dropped.
+metric_queue_size = 1024
+
+# Abort the diamond process if the handler process exits
+abort_on_handlers_process_exit = False
+
+################################################################################
+### Options for handlers
+[handlers]
+
+# daemon logging handler(s)
+keys = rotated_file
+
+### Defaults options for all Handlers
+[[default]]
+
+[[GraphiteHandler]]
+### Options for GraphiteHandler
+
+# Graphite server host
+host = {{ GRAPHITE_HOST|default("localhost") }}
+
+# Port to send metrics to
+port = {{ GRAPHITE_PORT|default("2003") }}
+
+# Socket timeout (seconds)
+timeout = 15
+
+# Batch size for metrics
+batch = 1
+
+hostname_method = {{ HOSTNAME_METHOD|default("smart") }}
+
+# Path Prefix and Suffix
+# you can use one or both to craft the path where you want to put metrics
+# such as: %(path_prefix)s.$(hostname)s.$(path_suffix)s.$(metric)s
+path_prefix = {{ PATH_PREFIX|default("servers") }}
+path_suffix = {{ PATH_SUFFIX|default("") }}
+
+
+################################################################################
+### Options for logging
+# for more information on file format syntax:
+# http://docs.python.org/library/logging.config.html#configuration-file-format
+
+[loggers]
+
+keys = root
+
+# handlers are higher in this config file, in:
+# [handlers]
+# keys = ...
+
+[formatters]
+
+keys = default
+
+[logger_root]
+
+# to increase verbosity, set DEBUG
+level = INFO
+handlers = rotated_file
+propagate = 1
+
+[handler_rotated_file]
+
+class = handlers.TimedRotatingFileHandler
+level = DEBUG
+formatter = default
+# rotate at midnight, each day and keep 7 days
+args = ('/var/log/diamond/diamond.log', 'midnight', 1, 2)
+
+[formatter_default]
+
+format = [%(asctime)s] [%(levelname)s] [%(threadName)s:%(processName)s] %(message)s
+datefmt =
+
+################################################################################
+### Options for config merging
+[configs]
+path = "/etc/diamond/configs/"
