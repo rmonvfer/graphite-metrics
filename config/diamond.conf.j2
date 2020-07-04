@@ -25,7 +25,7 @@ pid_file = /var/run/diamond.pid
 collectors_path = /usr/local/share/diamond/collectors/
 
 # Directory to load collector configs from
-collectors_config_path = /etc/diamond/collectors/
+collectors_config_path = /etc/diamond/configs
 
 # Number of seconds between each collector load
 collectors_load_delay = 1.0
@@ -68,7 +68,12 @@ timeout = 15
 # Batch size for metrics
 batch = 1
 
-hostname_method = {{ HOSTNAME_METHOD|default("smart") }}
+[collectors]
+[[default]]
+
+
+hostname_method = smart
+
 
 # Path Prefix and Suffix
 # you can use one or both to craft the path where you want to put metrics
@@ -114,7 +119,7 @@ args = ('/var/log/diamond/diamond.log', 'midnight', 1, 2)
 format = [%(asctime)s] [%(levelname)s] [%(threadName)s:%(processName)s] %(message)s
 datefmt =
 
-################################################################################
-### Options for config merging
+
 [configs]
-path = "/etc/diamond/configs/"
+path = "/etc/diamond/configs"
+extension = ".conf"
