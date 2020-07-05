@@ -72,7 +72,7 @@ batch = 1
 [[default]]
 
 
-hostname_method = smart
+hostname_method = {{ HOSTNAME_METHOD|default("smart")}}
 
 
 # Path Prefix and Suffix
